@@ -6,6 +6,7 @@ import { TLogin } from "@/utils/types/auth";
 import { Spinner } from '@/components/Spinner';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 
 export default function LoginPage() {
@@ -13,7 +14,6 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-
   } = useForm<TLogin>()
 
   const router = useRouter()
@@ -34,7 +34,9 @@ export default function LoginPage() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
       <div className="w-full p-6 bg-white rounded-md shadow-md lg:max-w-xl">
-        <h1 className="text-3xl font-bold text-center text-gray-700">Logo</h1>
+        <div className="flex justify-center">
+          <Image src={'/sara-logo.png'} alt="Sara Nossa Terra - Logo" width={84} height={84} />
+        </div>
         <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label
