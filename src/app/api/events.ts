@@ -1,6 +1,6 @@
 import config from '@/utils/config';
 import { TEvent, TEventCreate } from '@/utils/types/events';
-import { nextAuthOptions } from './auth/[...nextauth]/route';
+import { nextAuthOptions } from '@/utils/nextAuthOptions';
 import { getSession } from 'next-auth/react';
 import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';

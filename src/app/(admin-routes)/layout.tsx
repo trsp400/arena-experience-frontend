@@ -3,7 +3,7 @@ import { ReactNode } from "react"
 import { redirect } from "next/navigation";
 
 import Header from "@/components/layout/header";
-import { nextAuthOptions } from "../api/auth/[...nextauth]/route";
+import { nextAuthOptions } from "@/utils/nextAuthOptions";
 import Sidebar from "@/components/layout/sidebar";
 
 interface AdminLayoutProps {

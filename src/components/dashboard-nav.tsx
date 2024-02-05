@@ -5,13 +5,15 @@ import { usePathname } from "next/navigation";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { NavItem } from "@/types";
+import { NavItem } from "@/utils/types";
 import { Dispatch, SetStateAction } from "react";
+import { LucideIcon } from "lucide-react";
 
 interface DashboardNavProps {
   items: NavItem[];
   setOpen?: Dispatch<SetStateAction<boolean>>;
 }
+
 
 export function DashboardNav({ items, setOpen }: DashboardNavProps) {
   const path = usePathname();
@@ -22,8 +24,9 @@ export function DashboardNav({ items, setOpen }: DashboardNavProps) {
 
   return (
     <nav className="grid items-start gap-2">
-      {items.map((item, index) => {
-        const Icon = Icons[item.icon || "arrowRight"];
+      {items.map((item, index: number) => {
+        const icon = item.icon;
+        const Icon = Icons[icon || "arrowRight"];
         return (
           item.href && (
             <Link
