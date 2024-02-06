@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { useForm, SubmitHandler, UseControllerProps, useController } from "react-hook-form"
 import { TLogin } from "@/utils/types/auth";
 import { Spinner } from '@/components/Spinner';
-import { signIn } from 'next-auth/react';
+import { getSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 
 export default function LoginPage() {
@@ -19,6 +20,7 @@ export default function LoginPage() {
   const router = useRouter()
 
   const onSubmit: SubmitHandler<TLogin> = async (data) => {
+
     const result = await signIn('credentials', {
       ...data,
       redirect: false
@@ -27,6 +29,8 @@ export default function LoginPage() {
     if (result?.error) {
       return;
     }
+
+    toast.success('Logado com sucesso!')
 
     router.replace('/')
   }
@@ -53,7 +57,7 @@ export default function LoginPage() {
               {...register("email", { required: "Digite seu email" })}
             />
             {errors.email && (
-              <div className="text-red-700">
+              <div className="text-red-500">
                 <p >{errors.email.message}</p>
               </div>
             )}
@@ -73,7 +77,7 @@ export default function LoginPage() {
               {...register("password", { required: 'Digite sua senha' })}
             />
             {errors.password && (
-              <div className="text-red-700">
+              <div className="text-red-500">
                 <p >{errors.password.message}</p>
               </div>
             )}

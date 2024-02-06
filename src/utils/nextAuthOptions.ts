@@ -50,7 +50,6 @@ export const nextAuthOptions: NextAuthOptions = {
       session = token.user as any;
       return session;
     },
-
   },
   pages: {
     signIn: '/login',

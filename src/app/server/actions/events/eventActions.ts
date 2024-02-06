@@ -5,12 +5,11 @@ import { getSession } from 'next-auth/react'
 import { nextAuthOptions } from '@/utils/nextAuthOptions';
 import { revalidatePath } from 'next/cache';
 import { action } from '../safe-action';
-import { EventCreate } from '@/app/lib/eventSchemas';
+import { EventCreateSchema, EventSchema } from '@/lib/eventSchemas';
 const BACKEND_URL = config.BACKEND_URL
 
-export const createSafeEvent = action(EventCreate, async (formData) => {
+export const createSafeEvent = action(EventCreateSchema, async (formData) => {
   const session = await getServerSession(nextAuthOptions);
-  console.log(session)
   try {
     const response = await fetch(`${BACKEND_URL}/events`, {
       method: 'POST',
@@ -33,3 +32,25 @@ export const createSafeEvent = action(EventCreate, async (formData) => {
     throw error
   }
 })
+
+export const listEvents = async () => {
+  const session = await getServerSession(nextAuthOptions);
+  try {
+    const response = await fetch(`${BACKEND_URL}/events`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.token}`
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error
+  }
+}

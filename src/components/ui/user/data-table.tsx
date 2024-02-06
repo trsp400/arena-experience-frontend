@@ -2,6 +2,7 @@
 
 import {
   ColumnDef,
+  Row,
   RowSelectionState,
   VisibilityState,
   flexRender,
@@ -11,6 +12,18 @@ import {
 } from "@tanstack/react-table";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,10 +31,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "./input";
-import { Button } from "./button";
-import { ScrollArea, ScrollBar } from "./scroll-area";
-import { useState } from "react";
+import { Input } from "../input";
+import { Button } from "../button";
+import { ScrollArea, ScrollBar } from "../scroll-area";
+import { ReactNode, useState } from "react";
+import { Label } from "../label";
+import { AlertDialogProps } from "@radix-ui/react-alert-dialog";
+import { Event } from "@/constants/data";
+import { format } from "date-fns";
+import { useAction } from "next-safe-action/hooks";
+import { toggleSafeParticipation } from "@/app/server/actions/users/usersActions";
+import { toast } from "sonner";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -30,15 +50,90 @@ interface DataTableProps<TData, TValue> {
   searchName: string;
 }
 
+interface ConfirmationModal extends AlertDialogProps {
+  children?: ReactNode,
+  event: Event
+}
+
+const ConfirmationModal = ({ children, event, ...props }: ConfirmationModal) => {
+
+  const { execute, result, status, reset } = useAction(toggleSafeParticipation, {
+    onSuccess(data) {
+      console.log('success')
+      reset();
+    },
+    onExecute(data) {
+      reset();
+    },
+    onError(error) {
+      console.log('error')
+      console.log(error)
+      toast.error("Algum erro aconteceu", {
+        description: 'Tente novamente ou entre em contato com seu lider'
+      });
+      reset();
+    }
+  });
+
+  return event?.isParticipating ? (
+    <AlertDialog {...props}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Desmarcar Presença</AlertDialogTitle>
+          <AlertDialogDescription>
+            Tem certeza que deseja desmarcar sua presença no evento {event?.eventName} - {format(event?.eventDate, 'dd/MM/yyyy')}?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Não</AlertDialogCancel>
+          <AlertDialogAction onClick={() => {
+            execute({ eventId: event.id })
+            toast.success('Participação desmarcada com sucesso!');
+          }}
+          >
+            Sim
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ) : (
+    <AlertDialog {...props}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar Presença</AlertDialogTitle>
+          <AlertDialogDescription>
+            Você confirma sua presença no evento {event?.eventName} - {format(event?.eventDate, 'dd/MM/yyyy')}?
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Não</AlertDialogCancel>
+          <AlertDialogAction onClick={() => {
+            execute({ eventId: event.id })
+            toast.success('Participação confirmada com sucesso!');
+          }}
+          >
+            Sim
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
   searchName
 }: DataTableProps<TData, TValue>) {
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<Event>();
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     'id': false,
   })
+
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
   const table = useReactTable({
@@ -54,11 +149,11 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  /* this can be used to get the selectedrows 
-  console.log("value", table.getFilteredSelectedRowModel()); */
-
   return (
     <>
+      {
+        selectedRow && <ConfirmationModal open={dialogOpen} onOpenChange={setDialogOpen} event={selectedRow} />
+      }
       <Input
         placeholder={`Pesquisar ${searchName}...`}
         value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -95,7 +190,12 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selecionado(s)"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} onClick={() => {
+                      if (cell.column.id !== 'actions') {
+                        setDialogOpen(true)
+                        setSelectedRow(row.original as Event)
+                      }
+                    }} >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -117,7 +217,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
         <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </ScrollArea >
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} de{" "}

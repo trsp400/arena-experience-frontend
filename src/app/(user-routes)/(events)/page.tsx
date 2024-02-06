@@ -2,10 +2,10 @@ import { Suspense } from 'react';
 
 import BreadCrumb from "@/components/breadcrumb";
 
-import { EventScreen } from "@/components/tables/admin/events-table/event";
+import { EventScreen } from "@/components/tables/user/events-table/event";
 import { listEvents } from '@/app/server/actions/events/eventActions';
 
-const breadcrumbItems = [{ title: "Admin", link: "/admin/events" }];
+const breadcrumbItems = [{ title: "Eventos", link: "/" }];
 
 
 export default async function AdminDashboard() {
