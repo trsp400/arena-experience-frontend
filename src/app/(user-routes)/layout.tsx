@@ -2,25 +2,23 @@ import { getServerSession } from "next-auth"
 import { ReactNode } from "react"
 import { redirect } from "next/navigation";
 
-import Header from "@/components/layout/header";
+import Header from "@/components/layout/user-header";
 import { nextAuthOptions } from "@/utils/nextAuthOptions";
-import Sidebar from "@/components/layout/sidebar";
-import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
+import Sidebar from "@/components/layout/user-sidebar";
 
-interface AdminLayoutProps {
+interface UserLayoutProps {
   children: ReactNode
 }
 
-export default async function Adminlayout({ children }: AdminLayoutProps) {
+export default async function Userlayout({ children }: UserLayoutProps) {
   const session = await getServerSession(nextAuthOptions);
 
   if (!session) {
     redirect('/login')
   }
 
-  if (session?.user?.role !== 'admin') {
-    redirect('/')
+  if (session?.user?.role === 'admin') {
+    redirect('/admin')
   }
 
   return <>

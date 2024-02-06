@@ -104,6 +104,7 @@ export type Event = {
   eventType: string;
   eventNotes: string | null;
   eventImage: string;
+  isParticipating: boolean;
 }
 
 export type Employee = {
@@ -137,5 +138,14 @@ export const navItems: NavItem[] = [
     href: "/admin/users",
     icon: "user",
     label: "users",
+  },
+];
+
+export const userNavItems: NavItem[] = [
+  {
+    title: "Eventos",
+    href: "/",
+    icon: "page",
+    label: "Eventos",
   },
 ];
