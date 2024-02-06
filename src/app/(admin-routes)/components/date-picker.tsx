@@ -40,11 +40,14 @@ export function DatePicker({ onChange, selected }: any) {
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0 col-span-3">
         <Calendar
+          captionLayout='dropdown-buttons'
           mode="single"
           selected={date}
           onSelect={handleDateChange}
           initialFocus
           locale={ptBR}
+          fromYear={1960}
+          toYear={2025}
         />
       </PopoverContent>
     </Popover>
