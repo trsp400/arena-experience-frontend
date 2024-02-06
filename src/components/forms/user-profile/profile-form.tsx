@@ -15,6 +15,7 @@ import { Session } from 'next-auth';
 import { useAction } from 'next-safe-action/hooks';
 import { updateProfile } from '@/app/server/actions/users/usersActions';
 import { Spinner } from '@/components/Spinner';
+import { toast } from 'sonner';
 
 interface ProfileFormProps {
   profile: z.infer<typeof UpdateUserSchema>
@@ -39,12 +40,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
     onSuccess(data) {
       console.log('data')
       console.log(data)
+      toast.success('Atualizado com sucesso!')
     },
     onExecute(data) {
     },
     onError(error) {
       console.log('error')
       console.log(error)
+      toast.error('Ops, algum erro aconteceu!', {
+        description: 'Tente novamente ou entre em contato com seu líder'
+      })
     }
   });
 
