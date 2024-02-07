@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import { Event } from "@/constants/data";
 import { Checkbox } from "@/components/ui/checkbox";
+import { format } from "date-fns";
 
 export const columns: ColumnDef<Event>[] = [
   {
@@ -37,6 +38,11 @@ export const columns: ColumnDef<Event>[] = [
   {
     accessorKey: "eventDate",
     header: "Data",
+    cell: (({ cell: { getValue } }) => {
+      const value = getValue() as Date;
+      return format(value, 'dd/MM/yyyy')
+    }),
+    enableResizing: true
   },
   {
     accessorKey: "eventLocation",
@@ -55,7 +61,7 @@ export const columns: ColumnDef<Event>[] = [
     header: "Total de Participantes",
   },
   {
-    accessorKey: "eventDetails",
+    accessorKey: "eventNotes",
     header: "Detalhes",
   },
   {

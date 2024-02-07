@@ -10,8 +10,8 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
-export function DatePicker({ onChange, selected }: any) {
-  const [date, setDate] = useState<Date>(selected);
+export function DatePicker({ onChange, selected, ...props }: any) {
+  const [date, setDate] = useState<Date>(new Date(selected));
 
   useEffect(() => {
     if (selected !== date) {
@@ -24,7 +24,8 @@ export function DatePicker({ onChange, selected }: any) {
     onChange(newDate); // Notificar o React Hook Form sobre a mudança
   };
 
-  return (
+  // @ts-expect-error
+  return date != 'Invalid Date' && (
     <Popover >
       <PopoverTrigger asChild>
         <Button
@@ -35,10 +36,10 @@ export function DatePicker({ onChange, selected }: any) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "dd/MM/yyyy") : <span>Escolha uma data</span>}
+          {date ? format(date || new Date(), "dd/MM/yyyy") : <span>Escolha uma data</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 col-span-3">
+      <PopoverContent className="p-0 w-full flex flex-1 ">
         <Calendar
           captionLayout='dropdown-buttons'
           mode="single"

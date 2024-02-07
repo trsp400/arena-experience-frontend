@@ -21,3 +21,13 @@ export type TEventCreate = {
   eventNotes?: string | null;
   eventImage?: string;
 }
+
+export type TEventUpdate = {
+  eventName: string;
+  eventDate: Date;
+  eventLocation: string;
+  eventDuration: string;
+  eventStatus: string;
+  eventType: string;
+  eventNotes?: string | null;
+}

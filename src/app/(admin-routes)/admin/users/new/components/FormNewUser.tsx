@@ -3,88 +3,75 @@ import { toast } from 'sonner';
 import * as z from 'zod'
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useSession } from 'next-auth/react';
 
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { UpdateUserSchema } from "@/lib/userSchemas";
+import { CreateUserSchema } from "@/lib/userSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from '@/components/ui/label';
 import { DatePicker } from '@/components/date-picker';
-import { updateProfile } from '@/app/server/actions/users/usersActions';
+import { createSafeUser } from '@/app/server/actions/users/usersActions';
 import { Spinner } from '@/components/Spinner';
 import {
   Select, SelectContent,
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
+import { useParams, useRouter } from 'next/navigation';
 
-interface ProfileFormProps {
-  profile: z.infer<typeof UpdateUserSchema>
-}
+export const NewUserForm: React.FC = () => {
+  const router = useRouter()
+  const params = useParams()
 
-export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
-  const { update } = useSession()
-
-  const title = 'Perfil'
-  const description = "Edite suas informações";
+  const title = 'Novo Usuário'
+  const description = "Crie um novo usuário";
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<z.infer<typeof UpdateUserSchema>>({
-    resolver: zodResolver(UpdateUserSchema),
-    defaultValues: {
-      ...profile,
-      birthdate: new Date(profile?.birthdate || '')
-    }
+  } = useForm<z.infer<typeof CreateUserSchema>>({
+    resolver: zodResolver(CreateUserSchema),
   })
 
-  const { execute, result, status } = useAction(updateProfile, {
+  const { execute, result, status } = useAction(createSafeUser, {
     onSuccess(data) {
       console.log('data')
-      console.log(data?.data)
-      update({ fullName: data?.data?.fullName });
-      toast.success('Atualizado com sucesso!')
+      console.log(data)
+      toast.success('Criado com sucesso!')
+      router.replace('/admin/users')
     },
     onExecute(data) {
     },
     onError(error) {
       console.log('error')
       console.log(error)
-      toast.error('Erro ao atualizar seu perfil', {
+      toast.error('Erro ao criar usuário', {
         description: 'Tente novamente, se o erro persistir, entre em contato com seu líder.'
       })
     }
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof UpdateUserSchema>> = (data) => {
-    const updateData = data?.password?.length ? {
-      ...data
-    } : {
+  const onSubmit: SubmitHandler<z.infer<typeof CreateUserSchema>> = (data) => {
+    const createSchema = {
       fullName: data?.fullName,
       church: data?.church,
       birthdate: data?.birthdate,
       email: data?.email,
-      phoneNumber: data?.phoneNumber
+      phoneNumber: data?.phoneNumber,
+      password: data?.password
     }
-    execute(updateData)
+    console.log(createSchema)
+    execute(createSchema)
   };
 
   return (
     <>
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* <Button
-          variant="destructive"
-          size="sm"
-        >
-          <Trash className="h-4 w-4" />
-        </Button> */}
       </div>
       <Separator />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
@@ -94,7 +81,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
               Nome Completo
             </Label>
             <Input
-              id='fullName' className='col-span-3' placeholder='Digite seu nome completo' {...register("fullName")}
+              id='fullName' className='col-span-3' placeholder='Digite o nome completo' {...register("fullName")}
             />
             {errors.fullName && (
               <div className="text-red-500">
@@ -107,7 +94,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
               Email
             </Label>
             <Input
-              id='email' className='col-span-3' placeholder='Digite seu email' {...register("email")}
+              id='email' className='col-span-3' placeholder='Digite o email' {...register("email")}
             />
             {errors.email && (
               <div className="text-red-500">
@@ -123,7 +110,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
               Celular/WhatsApp
             </Label>
             <Input
-              id='phoneNumber' className='col-span-3' placeholder='Digite seu número de celular/WhatsApp' {...register("phoneNumber")}
+              id='phoneNumber' className='col-span-3' placeholder='Digite o número de celular/WhatsApp' {...register("phoneNumber")}
             />
             {errors.phoneNumber && (
               <div className="text-red-500">
@@ -184,10 +171,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
           )}
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <Label htmlFor='password'>
-              Nova Senha
+              Senha
             </Label>
             <Input
-              id='password' type='password' className='col-span-3' placeholder='Crie uma nova senha' {...register("password")}
+              id='password' type='password' className='col-span-3' placeholder='Crie uma senha' {...register("password")}
             />
             {errors.password && (
               <div className="text-red-500">
@@ -200,7 +187,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
         <div className='flex flex-wrap -mx-3 mb-6 p-3'>
 
           <Button className="ml-auto" type="submit" disabled={status === 'executing'}>
-            {status === 'executing' ? <Spinner /> : 'Atualizar perfil'}
+            {status === 'executing' ? <Spinner /> : 'Criar Usuário'}
           </Button>
         </div>
       </form>

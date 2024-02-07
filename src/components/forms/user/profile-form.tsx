@@ -13,19 +13,93 @@ import { UpdateUserSchema } from "@/lib/userSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from '@/components/ui/label';
 import { DatePicker } from '@/components/date-picker';
-import { updateProfile } from '@/app/server/actions/users/usersActions';
+import { deleteSafeUser, updateProfile } from '@/app/server/actions/users/usersActions';
 import { Spinner } from '@/components/Spinner';
 import {
   Select, SelectContent,
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
+import { useParams, useRouter } from 'next/navigation';
+import { Trash } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertModal } from '@/components/modal/alert-modal';
+import { useState } from 'react';
 
 interface ProfileFormProps {
   profile: z.infer<typeof UpdateUserSchema>
 }
 
+interface ConfirmDeleteUserModalProps {
+  isOpen: boolean;
+  setOpen: (value: boolean) => void;
+  loading: boolean;
+  userId: number
+}
+
+const ConfirmDeleteUsertModal: React.FC<ConfirmDeleteUserModalProps> = ({ isOpen, setOpen, loading, userId }) => {
+  const router = useRouter();
+
+  const { execute, result, status } = useAction(deleteSafeUser, {
+    onSuccess(data) {
+      console.log('data')
+      console.log(data)
+      toast.success('usuário deletado com sucesso com sucesso!');
+      router.replace('/admin/users')
+    },
+    onExecute(data) {
+    },
+    onError(error) {
+      console.log('error')
+      console.log(error)
+      toast.error('Erro ao deletar o usuário', {
+        description: 'Tente novamente, se o erro persistir, entre em contato com seu líder.'
+      })
+    }
+  });
+
+  return (
+    <>
+      {
+        status == 'executing' ? (
+          <Skeleton>
+            <AlertModal
+              isOpen={isOpen}
+              onClose={() => setOpen(false)}
+              onConfirm={execute}
+              loading={loading}
+              id={Number(userId)}
+            />
+          </Skeleton>
+        ) : (
+          <AlertModal
+            isOpen={isOpen}
+            onClose={() => setOpen(false)}
+            onConfirm={execute}
+            loading={loading}
+            id={Number(userId)}
+          />
+        )
+      }
+
+    </>
+  )
+}
+
 export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
+  const router = useRouter()
+  const params = useParams()
+  const userId = params?.userId;
+
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+
+  if (!userId || !profile?.id) {
+    toast.error('Não foi possível encontrar este usuário');
+    router.replace('/admin/users')
+  }
+
   const { update } = useSession()
 
   const title = 'Perfil'
@@ -77,14 +151,21 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
 
   return (
     <>
+      <ConfirmDeleteUsertModal
+        isOpen={open}
+        setOpen={() => setOpen(false)}
+        loading={loading}
+        userId={Number(userId)}
+      />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {/* <Button
+        <Button
           variant="destructive"
           size="sm"
+          onClick={() => setOpen(true)}
         >
           <Trash className="h-4 w-4" />
-        </Button> */}
+        </Button>
       </div>
       <Separator />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">

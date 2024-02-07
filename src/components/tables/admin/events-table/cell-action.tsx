@@ -1,4 +1,5 @@
 "use client";
+import { deleteSafeEvent } from "@/app/server/actions/events/eventActions";
 import { AlertModal } from "@/components/modal/alert-modal";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Event } from "@/constants/data";
 import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface CellActionProps {
   data: Event;
@@ -24,13 +27,31 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirm = async () => { };
 
+  const { execute, result, status } = useAction(deleteSafeEvent, {
+    onSuccess(data) {
+      console.log('data')
+      console.log(data)
+      toast.success('Evento deletado com sucesso com sucesso!');
+    },
+    onExecute(data) {
+    },
+    onError(error) {
+      console.log('error')
+      console.log(error)
+      toast.error('Erro ao deletar o evento', {
+        description: 'Tente novamente, se o erro persistir, entre em contato com seu líder.'
+      })
+    }
+  });
+
   return (
     <>
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
-        onConfirm={onConfirm}
+        onConfirm={execute}
         loading={loading}
+        id={data?.id}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

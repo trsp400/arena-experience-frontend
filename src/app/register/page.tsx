@@ -12,8 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DatePicker } from '@/components/date-picker';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { ToastAction } from '@/components/ui/toast';
+import {
+  Select, SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
@@ -86,6 +89,35 @@ export default function RegisterPage() {
             {errors.email && (
               <div className="text-red-500">
                 <p >{errors.email.message}</p>
+              </div>
+            )}
+          </div>
+          <div className='mb-4'>
+            <div className='items-center'>
+              <Label htmlFor='eventType'>
+                Unidade
+              </Label>
+              <Controller
+                control={control}
+                name="church"
+                rules={{ required: 'Selecione o tipo do evento' }}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id='eventType' className="col-span-3">{field.value || "Selecione a igreja"}</SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Sara Barra">Sara Barra</SelectItem>
+                      <SelectItem value="Sara Freguesia">Sara Freguesia</SelectItem>
+                      <SelectItem value="Sara Anil">Sara Anil</SelectItem>
+                      <SelectItem value="Sara Cidade de Deus">Sara Cidade de Deus</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+
+            </div>
+            {errors.church && (
+              <div className="text-red-500">
+                <p >{errors.church.message}</p>
               </div>
             )}
           </div>

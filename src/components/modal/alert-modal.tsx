@@ -6,8 +6,9 @@ import { Modal } from "@/components/ui/modal";
 interface AlertModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: ({ }: any) => void;
   loading: boolean;
+  id: number;
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({
@@ -15,6 +16,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   onClose,
   onConfirm,
   loading,
+  id
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -28,17 +30,20 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
   return (
     <Modal
-      title="Are you sure?"
-      description="This action cannot be undone."
+      title="Tem certeza?"
+      description="Essa ação não pode ser desfeita."
       isOpen={isOpen}
       onClose={onClose}
     >
       <div className="pt-6 space-x-2 flex items-center justify-end w-full">
         <Button disabled={loading} variant="outline" onClick={onClose}>
-          Cancel
+          Cancelar
         </Button>
-        <Button disabled={loading} variant="destructive" onClick={onConfirm}>
-          Continue
+        <Button disabled={loading} variant="destructive" onClick={() => {
+          onConfirm({ id })
+          onClose()
+        }}>
+          Confirmar
         </Button>
       </div>
     </Modal>

@@ -7,6 +7,7 @@ import { listEvents } from '@/app/server/actions/events/eventActions';
 
 const breadcrumbItems = [{ title: "Admin", link: "/admin/events" }];
 
+export const revalidate = 5;
 
 export default async function AdminDashboard() {
 

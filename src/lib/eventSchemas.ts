@@ -29,3 +29,18 @@ export const EventSchema = z.object({
   eventImage: z.string().optional(),
   eventParticipants: z.number(),
 })
+
+export const EventUpdateSchema = z.object({
+  id: z.number(),
+  eventName: z.string().optional(),
+  eventDate: z.date(),
+  eventLocation: z.string().optional(),
+  eventDuration: z.string().optional(),
+  eventType: z.string().optional(),
+  eventNotes: z.string().optional(),
+  eventStatus: z.string().optional(),
+})
+
+export const EventDeleteSchema = z.object({
+  id: z.number()
+})

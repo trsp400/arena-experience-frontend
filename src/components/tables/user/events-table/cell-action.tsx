@@ -50,6 +50,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
         loading={loading}
+        id={data?.id}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

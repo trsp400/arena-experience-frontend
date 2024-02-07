@@ -19,14 +19,14 @@ export const UserClient: React.FC<ProductsClientProps> = ({ data }) => {
     <>
       <div className="flex items-start justify-between">
         <Heading
-          title={`Users (${data.length})`}
-          description="Manage users (Client side table functionalities.)"
+          title={`Usuários (${data.length})`}
+          description="Gerencie os usuários do app"
         />
         <Button
           className="text-xs md:text-sm"
-          onClick={() => router.push(`/dashboard/user/new`)}
+          onClick={() => router.push(`/admin/users/new`)}
         >
-          <Plus className="mr-2 h-4 w-4" /> Add New
+          <Plus className="mr-2 h-4 w-4" /> Novo Usuário
         </Button>
       </div>
       <Separator />

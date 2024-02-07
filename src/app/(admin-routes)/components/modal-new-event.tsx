@@ -83,9 +83,9 @@ export function ModalNewEvent() {
               )}
             </div>
 
-            <div className='flex flex-1 flex-col'>
-              <div className='grid grid-cols-4 items-center'>
-                <Label>
+            <div className='flex flex-1'>
+              <div className='flex w-full min-w-full flex-row items-center'>
+                <Label className='pr-20 mr-1 max-sm:pr-12 max-sm:mr-3'>
                   Data
                 </Label>
                 <Controller
@@ -97,6 +97,7 @@ export function ModalNewEvent() {
                       {...field}
                       onChange={(date: any) => field.onChange(date)}
                       selected={field.value}
+
                     />
                   )}
                 />
@@ -196,7 +197,7 @@ export function ModalNewEvent() {
               </Label>
               <Textarea id='eventNotes' className='col-span-3' placeholder='Detalhes extras sobre o evento' {...register('eventNotes')} />
             </div>
-            <DialogFooter>
+            <DialogFooter className='flex justify-between gap-2'>
               <DialogClose asChild>
                 <Button type='button' variant={'outline'} disabled={status === 'executing'} onClick={() => setModalOpen(false)}>Cancelar</Button>
               </DialogClose>

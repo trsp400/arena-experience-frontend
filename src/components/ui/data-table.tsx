@@ -2,6 +2,8 @@
 
 import {
   ColumnDef,
+  ColumnResizeDirection,
+  ColumnResizeMode,
   RowSelectionState,
   VisibilityState,
   flexRender,
@@ -41,9 +43,17 @@ export function DataTable<TData, TValue>({
   })
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
 
+  const [columnResizeMode, setColumnResizeMode] =
+    useState<ColumnResizeMode>('onChange');
+
+  const [columnResizeDirection, setColumnResizeDirection] =
+    useState<ColumnResizeDirection>('ltr')
+
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode,
+    columnResizeDirection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -68,19 +78,57 @@ export function DataTable<TData, TValue>({
         className="w-full md:max-w-sm"
       />
       <ScrollArea className="rounded-md border h-[calc(80vh-220px)]">
-        <Table className="relative">
+        <Table
+        // {...{
+        //   style: {
+        //     width: table.getCenterTotalSize(),
+        //   },
+        // }}
+        >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      {...{
+                        colSpan: header.colSpan,
+                        style: {
+                          width: header.getSize() + 100,
+                        },
+                      }
+                      }
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
+                      <div
+                        {...{
+                          onDoubleClick: () => header.column.resetSize(),
+                          onMouseDown: header.getResizeHandler(),
+                          onTouchStart: header.getResizeHandler(),
+                          className: `resizer ${table.options.columnResizeDirection
+                            } ${header.column.getIsResizing() ? 'isResizing' : ''
+                            }`,
+                          style: {
+                            transform:
+                              columnResizeMode === 'onEnd' &&
+                                header.column.getIsResizing()
+                                ? `translateX(${(table.options.columnResizeDirection ===
+                                  'rtl'
+                                  ? -1
+                                  : 1) *
+                                (table.getState().columnSizingInfo
+                                  .deltaOffset ?? 0)
+                                }px)`
+                                : '',
+                          },
+                        }}
+                      />
                     </TableHead>
                   );
                 })}
@@ -95,7 +143,14 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selecionado(s)"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      {...{
+                        style: {
+                          width: cell.column.getSize(),
+                        },
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -123,7 +178,7 @@ export function DataTable<TData, TValue>({
           {table.getFilteredSelectedRowModel().rows.length} de{" "}
           {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -140,7 +195,7 @@ export function DataTable<TData, TValue>({
           >
             Próximo
           </Button>
-        </div>
+        </div> */}
       </div>
     </>
   );
