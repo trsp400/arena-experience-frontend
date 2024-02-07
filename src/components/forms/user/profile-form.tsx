@@ -1,9 +1,12 @@
 "use client";
+import { useState } from 'react';
 import { toast } from 'sonner';
 import * as z from 'zod'
 import { useAction } from 'next-safe-action/hooks';
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useSession } from 'next-auth/react';
+import { useParams, useRouter } from 'next/navigation';
+import { Trash } from 'lucide-react';
 
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
@@ -20,11 +23,14 @@ import {
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
-import { useParams, useRouter } from 'next/navigation';
-import { Trash } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertModal } from '@/components/modal/alert-modal';
-import { useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface ProfileFormProps {
   profile: z.infer<typeof UpdateUserSchema>
@@ -102,8 +108,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
 
   const { update } = useSession()
 
-  const title = 'Perfil'
-  const description = "Edite suas informações";
+  const title = 'Usuário'
+  const description = "Atualize as informações do usuário";
 
   const {
     register,
@@ -151,12 +157,22 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
 
   return (
     <>
-      <ConfirmDeleteUsertModal
-        isOpen={open}
-        setOpen={() => setOpen(false)}
-        loading={loading}
-        userId={Number(userId)}
-      />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <ConfirmDeleteUsertModal
+              isOpen={open}
+              setOpen={() => setOpen(false)}
+              loading={loading}
+              userId={Number(userId)}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Deletar usuário</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
         <Button

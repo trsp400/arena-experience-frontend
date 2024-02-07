@@ -11,10 +11,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Session } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-export function UserNav() {
-  const { data: session } = useSession();
+export function UserNav({ session }: { session: Session }) {
   const router = useRouter();
   if (session) {
     return (

@@ -94,7 +94,7 @@ export default function RegisterPage() {
           </div>
           <div className='mb-4'>
             <div className='items-center'>
-              <Label htmlFor='eventType'>
+              <Label htmlFor='eventType' className="block text-sm font-semibold text-gray-800">
                 Unidade
               </Label>
               <Controller
@@ -103,7 +103,10 @@ export default function RegisterPage() {
                 rules={{ required: 'Selecione o tipo do evento' }}
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id='eventType' className="col-span-3">{field.value || "Selecione a igreja"}</SelectTrigger>
+                    <SelectTrigger
+                      id='eventType'
+                      className=" text-gray-700 bg-white border rounded-md focus:border-gray-400 focus:ring-gray-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                    >{field.value || "Selecione a igreja"}</SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Sara Barra">Sara Barra</SelectItem>
                       <SelectItem value="Sara Freguesia">Sara Freguesia</SelectItem>
