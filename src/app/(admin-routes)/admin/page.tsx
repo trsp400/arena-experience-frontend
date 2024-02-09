@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-
 import BreadCrumb from "@/components/breadcrumb";
 
 import { EventScreen } from "@/components/tables/admin/events-table/event";

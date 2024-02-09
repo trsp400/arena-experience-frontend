@@ -137,6 +137,35 @@ export const updateProfile = action(UpdateUserSchema, async (formData) => {
   }
 })
 
+export const updateUser = action(UpdateUserSchema, async (formData) => {
+  const session = await getServerSession(nextAuthOptions);
+  const userId = formData?.id
+
+  delete formData?.id;
+  try {
+    const response = await fetch(`${BACKEND_URL}/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.token}`
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    await getUserById({ id: userId as number })
+
+    return data;
+  } catch (error) {
+    throw error
+  }
+})
+
 export const listUsers = async () => {
   const session = await getServerSession(nextAuthOptions);
   try {

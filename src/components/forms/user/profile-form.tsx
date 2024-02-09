@@ -16,7 +16,7 @@ import { UpdateUserSchema } from "@/lib/userSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from '@/components/ui/label';
 import { DatePicker } from '@/components/date-picker';
-import { deleteSafeUser, updateProfile } from '@/app/server/actions/users/usersActions';
+import { deleteSafeUser, updateProfile, updateUser } from '@/app/server/actions/users/usersActions';
 import { Spinner } from '@/components/Spinner';
 import {
   Select, SelectContent,
@@ -124,7 +124,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
     }
   })
 
-  const { execute, result, status } = useAction(updateProfile, {
+  const { execute, result, status } = useAction(updateUser, {
     onSuccess(data) {
       console.log('data')
       console.log(data?.data)
@@ -146,6 +146,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile }) => {
     const updateData = data?.password?.length ? {
       ...data
     } : {
+      id: data?.id,
       fullName: data?.fullName,
       church: data?.church,
       birthdate: data?.birthdate,
